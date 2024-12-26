@@ -1,2 +1,2 @@
 sleep 30
-sh /data/adb/modules/AyundaRisu/AyundaRisu/AyundaRisu.sh
+sh /data/adb/modules/AyundaRusdi/AyundaRisu/AyundaRisu.sh
