@@ -1,4 +1,4 @@
-![Ayunda Risu Color Enhancer](https://github.com/user-attachments/assets/26e4f4c0-d8a6-47ea-9de8-6e3af5ea9b63)
+![Banner](https://github.com/user-attachments/assets/2c5165ab-e6e7-4cc6-8fbd-c1ce919febd7)
 
 [日本語](./README_JP.md)
 
