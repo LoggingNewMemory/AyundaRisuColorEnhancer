@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script>let callbackId = 0;
+function executeCommand(command, options = {}) {
+    return new Promise((resolve, reject)=>{
+        const callback = `exec_callback_${Date.now()}_${callbackId++}`;
+        function cleanup(name) {
+            delete window[name];
+        }
+        window[callback] = (errno, stdout, stderr)=>{
+            resolve({
+                errno,
+                stdout,
+                stderr
+            });
+            cleanup(callback);
+        };
+        try {
+            ksu.exec(command, JSON.stringify(options), callback);
+        } catch (error) {
+            reject(error);
+            cleanup(callback);
+        }
+    });
+}
+document.addEventListener("DOMContentLoaded", async ()=>{
+    document.getElementById("moduleOnButton").addEventListener("click", async ()=>{
+        try {
+            const result = await executeCommand("sh /data/adb/modules/AyundaRusdi/AyundaRisu/ModuleOn.sh");
+            if (result.errno === 0) ksu.toast("Module enabled successfully!");
+            else ksu.toast("Failed to enable module: " + result.stderr);
+        } catch (error) {
+            ksu.toast("Error: " + error.message);
+        }
+    });
+    document.getElementById("moduleOffButton").addEventListener("click", async ()=>{
+        try {
+            const result = await executeCommand("sh /data/adb/modules/AyundaRusdi/AyundaRisu/ModuleOff.sh");
+            if (result.errno === 0) ksu.toast("Module disabled successfully!");
+            else ksu.toast("Failed to disable module: " + result.stderr);
+        } catch (error) {
+            ksu.toast("Error: " + error.message);
+        }
+    });
+});
+
+</script>
+</head>
+<body class="bg-gray-900 flex flex-col min-h-screen text-white">
+    <header class="backdrop-blur-md ml-3 mt-3 p-4 sticky top-0 z-50">
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="font-bold text-2xl">Ayunda Rusdi</h1>
+                <span class="text-pink-400 text-sm">By: Kanagawa Yamada</span>
+            </div>
+            <img src="/rusdi.aa5bad4c.png" alt="Logo" class="h-10 w-10">
+        </div>
+    </header>
+    <main class="flex-grow pt-1">
+        <div class="p-6">
+            <div class="bg-gray-800 flex items-center justify-center mb-4 p-4 rounded-lg">
+                <button id="moduleOnButton" class="bg-blue-600 hover:bg-blue-500 px-10 py-3 rounded-md text-sm text-white mr-2">Module On</button>
+                <button id="moduleOffButton" class="bg-red-600 hover:bg-red-500 px-10 py-3 rounded-md text-sm text-white">Module Off</button>
+            </div>
+        </div>
+    </main>
+    <footer class="mb-2 mt-auto py-3 text-center text-gray-600 text-xs">
+        <p>By: Kanagawa Yamada</p>
+    </footer>
+<script src="/WebUI.3464ddca.js"></script></body>
+</html>
