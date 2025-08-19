@@ -1,24 +1,15 @@
 let callbackId = 0;
 
 function executeCommand(command, options = {}) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
         const callback = `exec_callback_${Date.now()}_${callbackId++}`;
-        
-        function cleanup(name) {
-            delete window[name];
-        }
         
         window[callback] = (errno, stdout, stderr) => {
             resolve({ errno, stdout, stderr });
-            cleanup(callback);
+            delete window[callback];
         };
         
-        try {
-            ksu.exec(command, JSON.stringify(options), callback);
-        } catch (error) {
-            reject(error);
-            cleanup(callback);
-        }
+        ksu.exec(command, JSON.stringify(options), callback);
     });
 }
 
@@ -28,49 +19,50 @@ document.addEventListener("DOMContentLoaded", () => {
     const slider = document.getElementById("moduleValueSlider");
     const sliderValueDisplay = document.getElementById("sliderValueDisplay");
 
-    const applySetting = async () => {
-        try {
-            const sliderValue = slider.value;
-            // Single command to save the new value AND then execute the script.
-            const command = `echo 'service call SurfaceFlinger 1022 f ${sliderValue}' > /data/adb/modules/AyundaRusdi/AyundaRisu/ModuleOn.sh && sh /data/adb/modules/AyundaRusdi/AyundaRisu/ModuleOn.sh`;
-            const result = await executeCommand(command);
-
-            if (result.errno === 0) {
-                console.log("Setting applied with value:", sliderValue);
-            } else {
-                console.error("Failed to apply setting:", result.stderr);
-                ksu.toast("Failed to apply setting: " + result.stderr);
-            }
-        } catch (error) {
-            console.error("Error:", error);
-            ksu.toast("Error: " + error.message);
-        }
+    /**
+     * Reads the current value from ModuleOn.sh and updates the UI.
+     */
+    const loadInitialValue = async () => {
+        const command = "awk '{print $NF}' /data/adb/modules/AyundaRusdi/AyundaRisu/ModuleOn.sh";
+        const result = await executeCommand(command);
+        const value = parseFloat(result.stdout.trim());
+        
+        // Set the slider's internal value (this requires a standard number with a dot)
+        slider.value = value;
+        
+        // Set the visual display text, replacing the dot with a comma
+        sliderValueDisplay.textContent = value.toFixed(1).replace('.', ',');
     };
 
-    // Updates the text display in real-time as you drag.
+    /**
+     * Applies the current slider value to the system and saves it.
+     */
+    const applySetting = async () => {
+        // The value written to the shell script MUST use a period, not a comma.
+        const sliderValue = parseFloat(slider.value).toFixed(1); 
+        const command = `echo 'service call SurfaceFlinger 1022 f ${sliderValue}' > /data/adb/modules/AyundaRusdi/AyundaRisu/ModuleOn.sh && sh /data/adb/modules/AyundaRusdi/AyundaRisu/ModuleOn.sh`;
+        await executeCommand(command);
+    };
+
+    // --- Event Listeners ---
+
+    // 1. Load the saved value when the page is ready.
+    loadInitialValue();
+
+    // 2. Update the display in real-time as the user drags the slider.
     slider.addEventListener("input", () => {
-        sliderValueDisplay.textContent = slider.value;
+        const displayValue = parseFloat(slider.value).toFixed(1).replace('.', ',');
+        sliderValueDisplay.textContent = displayValue;
     });
 
-    // Executes the command only when you release the slider.
+    // 3. Apply the setting when the user releases the slider.
     slider.addEventListener("change", applySetting);
 
-    // The button still works to apply the current setting.
+    // 4. Also apply the setting when the "Module On" button is clicked.
     moduleOnButton.addEventListener("click", applySetting);
 
-    moduleOffButton.addEventListener("click", async () => {
-        try {
-            const { errno, stdout, stderr } = await executeCommand("sh /data/adb/modules/AyundaRusdi/AyundaRisu/ModuleOff.sh");
-            if (errno === 0) {
-                console.log("Module disabled:", stdout);
-                ksu.toast("Module disabled successfully!");
-            } else {
-                console.error("Module disable failed:", stderr);
-                ksu.toast("Failed to disable module: " + stderr);
-            }
-        } catch (error) {
-            console.error("Error:", error);
-            ksu.toast("Error: " + error.message);
-        }
+    // 5. Handle the "Module Off" button.
+    moduleOffButton.addEventListener("click", () => {
+        executeCommand("sh /data/adb/modules/AyundaRusdi/AyundaRisu/ModuleOff.sh");
     });
 });
