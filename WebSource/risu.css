@@ -74,6 +74,42 @@ button {
     background-color: #ef4444; /* hover:bg-red-500 */
 }
 
+/* New Slider Styles */
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  background: #f472b6; /* text-pink-400 */
+  border-radius: 50%;
+  cursor: pointer;
+  margin-top: -6px; /* Center thumb on track */
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  background: #f472b6; /* text-pink-400 */
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 8px;
+  cursor: pointer;
+  background: #4b5563; /* bg-gray-600 */
+  border-radius: 5px;
+}
+
+input[type="range"]::-moz-range-track {
+  width: 100%;
+  height: 8px;
+  cursor: pointer;
+  background: #4b5563; /* bg-gray-600 */
+  border-radius: 5px;
+}
+
 /* Footer */
 footer {
     margin-bottom: 0.5rem; /* mb-2 */

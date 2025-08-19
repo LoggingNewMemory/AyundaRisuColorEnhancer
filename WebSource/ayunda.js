@@ -23,15 +23,44 @@ function executeCommand(command, options = {}) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    document.getElementById("moduleOnButton").addEventListener("click", async () => {
+    const moduleOnButton = document.getElementById("moduleOnButton");
+    const moduleOffButton = document.getElementById("moduleOffButton");
+    const slider = document.getElementById("moduleValueSlider");
+    const sliderValueDisplay = document.getElementById("sliderValueDisplay");
+
+    // Update display when slider value changes
+    slider.addEventListener("input", () => {
+        sliderValueDisplay.textContent = slider.value;
+    });
+
+    moduleOnButton.addEventListener("click", async () => {
         try {
-            const { errno, stdout, stderr } = await executeCommand("sh /data/adb/modules/AyundaRusdi/AyundaRisu/ModuleOn.sh");
-            if (errno === 0) {
-                console.log("Module enabled:", stdout);
-                ksu.toast("Module enabled successfully!");
+            const sliderValue = slider.value;
+            
+            // Step 1: Create a command to overwrite ModuleOn.sh with the new value.
+            // Note the use of single quotes to prevent shell expansion issues.
+            const saveCommand = `echo 'service call SurfaceFlinger 1022 f ${sliderValue}' > /data/adb/modules/AyundaRusdi/AyundaRisu/ModuleOn.sh`;
+
+            const saveResult = await executeCommand(saveCommand);
+
+            if (saveResult.errno !== 0) {
+                console.error("Failed to save setting:", saveResult.stderr);
+                ksu.toast("Error saving setting: " + saveResult.stderr);
+                return; // Stop if we can't save the file
+            }
+
+            console.log("Setting saved to ModuleOn.sh successfully!");
+            ksu.toast("Setting saved!");
+
+            // Step 2: Execute the script to apply the new setting immediately.
+            const applyResult = await executeCommand("sh /data/adb/modules/AyundaRusdi/AyundaRisu/ModuleOn.sh");
+            
+            if (applyResult.errno === 0) {
+                console.log("Module enabled with value:", sliderValue);
+                ksu.toast(`Module enabled with value: ${sliderValue}`);
             } else {
-                console.error("Module enable failed:", stderr);
-                ksu.toast("Failed to enable module: " + stderr);
+                console.error("Module enable failed:", applyResult.stderr);
+                ksu.toast("Failed to apply setting: " + applyResult.stderr);
             }
         } catch (error) {
             console.error("Error:", error);
@@ -39,7 +68,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    document.getElementById("moduleOffButton").addEventListener("click", async () => {
+    moduleOffButton.addEventListener("click", async () => {
         try {
             const { errno, stdout, stderr } = await executeCommand("sh /data/adb/modules/AyundaRusdi/AyundaRisu/ModuleOff.sh");
             if (errno === 0) {
