@@ -42,33 +42,6 @@ header img {
     height: 2.5rem; /* h-10 */
     width: 2.5rem; /* w-10 */
     margin-right: 0.5rem; /* mr-2 */
-}/* Header */
-header {
-    backdrop-filter: blur(12px); /* backdrop-blur-md */
-    margin-left: 0.75rem; /* ml-3 */
-    margin-top: 0.75rem; /* mt-3 */
-    padding: 1rem; /* p-4 */
-    position: sticky;
-    top: 0;
-    z-index: 50;
-}
-
-header h1 {
-    font-size: 1.5rem; /* text-2xl */
-    line-height: 2rem;
-    font-weight: 700; /* font-bold */
-}
-
-header span {
-    color: #f472b6; /* text-pink-400 */
-    font-size: 0.875rem; /* text-sm */
-    line-height: 1.25rem;
-}
-
-header img {
-    height: 2.5rem; /* h-10 */
-    width: 2.5rem; /* w-10 */
-    margin-right: 0.5rem; /* mr-2 */
 }
 
 /* Buttons */
