@@ -38,7 +38,6 @@ document.addEventListener("DOMContentLoaded", () => {
             const sliderValue = slider.value;
             
             // Step 1: Create a command to overwrite ModuleOn.sh with the new value.
-            // Note the use of single quotes to prevent shell expansion issues.
             const saveCommand = `echo 'service call SurfaceFlinger 1022 f ${sliderValue}' > /data/adb/modules/AyundaRusdi/AyundaRisu/ModuleOn.sh`;
 
             const saveResult = await executeCommand(saveCommand);
@@ -50,14 +49,14 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             console.log("Setting saved to ModuleOn.sh successfully!");
-            ksu.toast("Setting saved!");
+            // ksu.toast("Setting saved!"); // <-- This notification has been removed.
 
             // Step 2: Execute the script to apply the new setting immediately.
             const applyResult = await executeCommand("sh /data/adb/modules/AyundaRusdi/AyundaRisu/ModuleOn.sh");
             
             if (applyResult.errno === 0) {
                 console.log("Module enabled with value:", sliderValue);
-                ksu.toast(`Module enabled with value: ${sliderValue}`);
+                // ksu.toast(`Module enabled with value: ${sliderValue}`); // <-- This notification has been removed.
             } else {
                 console.error("Module enable failed:", applyResult.stderr);
                 ksu.toast("Failed to apply setting: " + applyResult.stderr);
