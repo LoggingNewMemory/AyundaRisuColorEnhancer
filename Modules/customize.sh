@@ -1,8 +1,6 @@
-LATESTARTSERVICE=true
-
-ui_print "🗡--------------------------------🗡"
+ui_print "------------------------------------"
 ui_print "      Ayunda Risu Color Enhancer    "
-ui_print "🗡--------------------------------🗡"
+ui_print "------------------------------------"
 ui_print "         By: Kanagawa Yamada        "
 ui_print "------------------------------------"
 ui_print "      READ THE TELEGRAM MESSAGE     "
@@ -24,9 +22,9 @@ ui_print "RAM : $(free | grep Mem |  awk '{print $2}') "
 ui_print " "
 sleep 1.5
 
-ui_print "-----------------🗡-----------------"
+ui_print "------------------------------------"
 ui_print "            MODULE INFO             "
-ui_print "-----------------🗡-----------------"
+ui_print "------------------------------------"
 ui_print "Name : Rusdi Color Enhancer"
 ui_print "Version : V 3.0"
 ui_print "Support Root : Magisk / KernelSU / APatch"
@@ -62,5 +60,3 @@ if [ "$(which magisk)" ]; then
 		ui_print "- Please grant root permission for KSU WebUI"
 	fi
 fi
-
-am start -a android.intent.action.VIEW -d https://t.me/KanagawaLabAnnouncement/327 >/dev/null 2>&1
