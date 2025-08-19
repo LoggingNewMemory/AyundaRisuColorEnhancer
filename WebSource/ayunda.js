@@ -28,44 +28,35 @@ document.addEventListener("DOMContentLoaded", () => {
     const slider = document.getElementById("moduleValueSlider");
     const sliderValueDisplay = document.getElementById("sliderValueDisplay");
 
-    // Update display when slider value changes
-    slider.addEventListener("input", () => {
-        sliderValueDisplay.textContent = slider.value;
-    });
-
-    moduleOnButton.addEventListener("click", async () => {
+    const applySetting = async () => {
         try {
             const sliderValue = slider.value;
-            
-            // Step 1: Create a command to overwrite ModuleOn.sh with the new value.
-            const saveCommand = `echo 'service call SurfaceFlinger 1022 f ${sliderValue}' > /data/adb/modules/AyundaRusdi/AyundaRisu/ModuleOn.sh`;
+            // Single command to save the new value AND then execute the script.
+            const command = `echo 'service call SurfaceFlinger 1022 f ${sliderValue}' > /data/adb/modules/AyundaRusdi/AyundaRisu/ModuleOn.sh && sh /data/adb/modules/AyundaRusdi/AyundaRisu/ModuleOn.sh`;
+            const result = await executeCommand(command);
 
-            const saveResult = await executeCommand(saveCommand);
-
-            if (saveResult.errno !== 0) {
-                console.error("Failed to save setting:", saveResult.stderr);
-                ksu.toast("Error saving setting: " + saveResult.stderr);
-                return; // Stop if we can't save the file
-            }
-
-            console.log("Setting saved to ModuleOn.sh successfully!");
-            // ksu.toast("Setting saved!"); // <-- This notification has been removed.
-
-            // Step 2: Execute the script to apply the new setting immediately.
-            const applyResult = await executeCommand("sh /data/adb/modules/AyundaRusdi/AyundaRisu/ModuleOn.sh");
-            
-            if (applyResult.errno === 0) {
-                console.log("Module enabled with value:", sliderValue);
-                // ksu.toast(`Module enabled with value: ${sliderValue}`); // <-- This notification has been removed.
+            if (result.errno === 0) {
+                console.log("Setting applied with value:", sliderValue);
             } else {
-                console.error("Module enable failed:", applyResult.stderr);
-                ksu.toast("Failed to apply setting: " + applyResult.stderr);
+                console.error("Failed to apply setting:", result.stderr);
+                ksu.toast("Failed to apply setting: " + result.stderr);
             }
         } catch (error) {
             console.error("Error:", error);
             ksu.toast("Error: " + error.message);
         }
+    };
+
+    // Updates the text display in real-time as you drag.
+    slider.addEventListener("input", () => {
+        sliderValueDisplay.textContent = slider.value;
     });
+
+    // Executes the command only when you release the slider.
+    slider.addEventListener("change", applySetting);
+
+    // The button still works to apply the current setting.
+    moduleOnButton.addEventListener("click", applySetting);
 
     moduleOffButton.addEventListener("click", async () => {
         try {
