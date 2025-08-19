@@ -1,1 +1,3 @@
 /WebSource/node_modules
+/WebSource/dist
+/WebSource/.parcel-cache
