@@ -1,6 +1,5 @@
-![Banner](https://github.com/user-attachments/assets/2c5165ab-e6e7-4cc6-8fbd-c1ce919febd7)
+<img width="1920" height="1080" alt="Banner" src="https://github.com/user-attachments/assets/6f0aa82e-308d-4e04-a11c-c73cc118829a" />
 
-[日本語](./README_JP.md)
-
-Features: 
-- Makes your screen saturated and bright, just like [Risu](https://hololive.hololivepro.com/talents/ayunda-risu/)'s smile
+Features:
+- WebUI to activate / deactivate module
+- Slider to adjust SurfaceFlinger value
